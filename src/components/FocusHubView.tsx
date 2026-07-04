@@ -413,7 +413,7 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
     const fsStrokeDashoffset = fsCircumference - (timeLeft / totalSeconds) * fsCircumference;
 
     return (
-      <div className="focus-fullscreen-overlay">
+      <div className={`focus-fullscreen-overlay gradient-${activeTab === 'timer' ? timerMode : 'stopwatch'}`}>
         {/* Ambient Glowing Blobs */}
         <div className="fullscreen-bg-blobs">
           <div className="fullscreen-bg-blob blob-primary" style={{ backgroundColor: accentColor }}></div>
@@ -470,8 +470,18 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
                 </div>
               </div>
 
-              <div className="fullscreen-status">
-                {isTimerRunning ? 'focusing' : 'paused'}
+              <div className={`fullscreen-status-badge ${isTimerRunning ? 'running' : 'paused'}`} style={{ color: isTimerRunning ? accentColor : undefined }}>
+                {isTimerRunning ? (
+                  <>
+                    <span className="pulse-dot" style={{ backgroundColor: accentColor }}></span>
+                    <span>Focusing</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="static-dot"></span>
+                    <span>Paused</span>
+                  </>
+                )}
               </div>
 
               {activeTask && (
@@ -507,8 +517,18 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
                 {formatStopwatchTimeStr(stopwatchTime)}
               </div>
 
-              <div className="fullscreen-status">
-                {isStopwatchRunning ? 'running' : 'paused'}
+              <div className={`fullscreen-status-badge ${isStopwatchRunning ? 'running' : 'paused'}`} style={{ color: isStopwatchRunning ? 'var(--accent)' : undefined }}>
+                {isStopwatchRunning ? (
+                  <>
+                    <span className="pulse-dot" style={{ backgroundColor: 'var(--accent)' }}></span>
+                    <span>Running</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="static-dot"></span>
+                    <span>Paused</span>
+                  </>
+                )}
               </div>
 
               {activeTask && (

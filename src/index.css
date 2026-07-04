@@ -2749,14 +2749,50 @@ select {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background-color: var(--bg-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 32px;
   overflow: hidden;
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: all var(--transition-slow);
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.focus-fullscreen-overlay.gradient-study {
+  background: linear-gradient(-45deg, #0b0c1e, #3b156e, #7a1c8d, #251f7d, #05071a);
+  background-size: 400% 400%;
+  animation: fullscreenGradientFlow 12s ease infinite;
+}
+
+.focus-fullscreen-overlay.gradient-short_break {
+  background: linear-gradient(-45deg, #021a14, #08694f, #1ea37d, #0b5742, #030d22);
+  background-size: 400% 400%;
+  animation: fullscreenGradientFlow 12s ease infinite;
+}
+
+.focus-fullscreen-overlay.gradient-long_break {
+  background: linear-gradient(-45deg, #042436, #0e7596, #1fa6ce, #0b5e78, #030f24);
+  background-size: 400% 400%;
+  animation: fullscreenGradientFlow 12s ease infinite;
+}
+
+.focus-fullscreen-overlay.gradient-stopwatch {
+  background: linear-gradient(-45deg, #060b1b, #39227c, #1b2a5a, #171a38, #020510);
+  background-size: 400% 400%;
+  animation: fullscreenGradientFlow 15s ease infinite;
+}
+
+@keyframes fullscreenGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .fullscreen-bg-blobs {
@@ -2769,14 +2805,14 @@ select {
 
 .fullscreen-bg-blob {
   position: absolute;
-  width: 55vw;
-  height: 55vw;
+  width: 60vw;
+  height: 60vw;
   border-radius: 50%;
-  filter: blur(140px);
-  opacity: 0.18;
-  mix-blend-mode: screen;
+  filter: blur(130px);
+  opacity: 0.28;
+  mix-blend-mode: plus-lighter;
   transition: background-color var(--transition-slow);
-  animation: floatBlob 22s infinite ease-in-out alternate;
+  animation: floatBlob 16s infinite ease-in-out alternate;
 }
 
 .fullscreen-bg-blob.blob-primary {
@@ -2787,33 +2823,30 @@ select {
 .fullscreen-bg-blob.blob-secondary {
   bottom: -20%;
   right: -10%;
-  animation-delay: -6s;
-  animation-duration: 26s;
+  animation-delay: -4s;
+  animation-duration: 20s;
 }
 
 .fullscreen-bg-blob.blob-tertiary {
   top: 35%;
   left: 25%;
-  width: 40vw;
-  height: 40vw;
-  animation-delay: -12s;
-  animation-duration: 18s;
-  opacity: 0.12;
+  width: 45vw;
+  height: 45vw;
+  animation-delay: -8s;
+  animation-duration: 14s;
+  opacity: 0.16;
 }
 
 @keyframes floatBlob {
   0% {
     transform: translate(0, 0) scale(1) rotate(0deg);
   }
-
   33% {
-    transform: translate(6vw, 4vh) scale(1.15) rotate(120deg);
+    transform: translate(8vw, 6vh) scale(1.15) rotate(120deg);
   }
-
   66% {
-    transform: translate(-4vw, 8vh) scale(0.9) rotate(240deg);
+    transform: translate(-6vw, 10vh) scale(0.9) rotate(240deg);
   }
-
   100% {
     transform: translate(0, 0) scale(1) rotate(360deg);
   }
@@ -2823,7 +2856,6 @@ select {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -2832,19 +2864,21 @@ select {
 .fullscreen-glass-card {
   position: relative;
   z-index: 10;
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid var(--glass-border);
-  border-radius: 36px;
-  padding: 48px;
-  width: 100%;
-  max-width: 620px;
+  background: rgba(10, 15, 30, 0.45);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 40px;
+  padding: 56px 48px;
+  width: 90%;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 32px 80px var(--shadow-color), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.05),
+              0 0 40px rgba(var(--accent-rgb), 0.05);
   transition: all var(--transition-slow);
   text-align: center;
 }
@@ -2854,10 +2888,10 @@ select {
   top: 32px;
   right: 32px;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 14px;
   border-radius: 18px;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   z-index: 20;
   transition: all var(--transition-fast);
@@ -2867,10 +2901,10 @@ select {
 }
 
 .fullscreen-exit-btn:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
-  box-shadow: 0 4px 12px var(--shadow-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .fullscreen-content {
@@ -2884,11 +2918,12 @@ select {
 .fullscreen-subtitle {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 16px;
+  font-size: 15px;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   margin-bottom: 24px;
-  text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.2);
+  text-shadow: 0 0 20px currentColor;
+  opacity: 0.9;
 }
 
 .fullscreen-digits-wrap {
@@ -2896,17 +2931,19 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 24px 0;
+  margin: 28px 0;
 }
 
 .fullscreen-digits {
   font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 110px;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: 112px;
+  color: #ffffff;
+  letter-spacing: -0.03em;
   line-height: 1;
   z-index: 5;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.12);
 }
 
 .fullscreen-circle-container {
@@ -2917,34 +2954,85 @@ select {
   pointer-events: none;
 }
 
-.fullscreen-status {
+/* Pulsing Status Badges */
+.fullscreen-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
   font-family: var(--font-sans);
+  font-size: 11px;
   font-weight: 700;
-  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
-  color: var(--text-secondary);
-  letter-spacing: 0.25em;
+  letter-spacing: 0.2em;
   margin-top: 12px;
   margin-bottom: 32px;
-  opacity: 0.8;
+  transition: all var(--transition-normal);
+}
+
+.fullscreen-status-badge.running {
+  border-color: rgba(var(--accent-rgb), 0.3);
+  background: rgba(var(--accent-rgb), 0.05);
+}
+
+.fullscreen-status-badge .pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+.fullscreen-status-badge .static-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes pulseDot {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.5;
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+    box-shadow: 0 0 8px 2px currentColor;
+  }
+  100% {
+    transform: scale(0.85);
+    opacity: 0.5;
+    box-shadow: 0 0 0 0 currentColor;
+  }
 }
 
 .fullscreen-task-badge {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  background: rgba(var(--accent-rgb), 0.08);
-  border: 1px solid rgba(var(--accent-rgb), 0.15);
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 99px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 32px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 36px;
   max-width: 90%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: all var(--transition-normal);
+}
+
+.fullscreen-task-badge:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .fullscreen-controls {
@@ -2957,9 +3045,9 @@ select {
 .fullscreen-control-btn {
   padding: 16px;
   border-radius: 99px;
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-tertiary);
-  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.65);
   cursor: pointer;
   transition: all var(--transition-fast);
   display: flex;
@@ -2968,8 +3056,9 @@ select {
 }
 
 .fullscreen-control-btn:hover {
-  color: var(--text-primary);
-  border-color: var(--text-secondary);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.08);
   transform: scale(1.08);
 }
 
@@ -2982,7 +3071,7 @@ select {
 
 .fullscreen-control-btn.play-pause:hover {
   transform: scale(1.08);
-  box-shadow: 0 12px 28px var(--glow-color);
+  box-shadow: 0 12px 32px var(--glow-color);
 }
 
 /* Responsive Grid & Card Styling */
