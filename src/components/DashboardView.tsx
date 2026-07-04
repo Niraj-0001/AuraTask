@@ -12,9 +12,10 @@ import {
 interface DashboardViewProps {
   tasks: Task[];
   totalFocusTime: number;
+  username: string;
 }
 
-export const DashboardView: React.FC<DashboardViewProps> = ({ tasks, totalFocusTime }) => {
+export const DashboardView: React.FC<DashboardViewProps> = ({ tasks, totalFocusTime, username }) => {
   // Stats
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(t => t.status === 'completed').length;
@@ -183,7 +184,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ tasks, totalFocusT
     <div className="dashboard-view animate-slide-up">
       {/* Title */}
       <div className="dashboard-title-area">
-        <h1>Welcome Back!</h1>
+        <h1>Welcome Back, <span style={{ color: 'var(--accent)' }}>{username}</span>!</h1>
         <p>Here's a breakdown of your focus sessions and workspace stats.</p>
       </div>
 

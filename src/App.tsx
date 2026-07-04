@@ -11,6 +11,7 @@ import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { parseAiPrompt, fetchGeminiParsedTask, AiTaskModal } from './components/AiTaskModal';
 import { FullScreenClock } from './components/FullScreenClock';
 import { ThemeSelectView } from './components/ThemeSelectView';
+import { WelcomeModal } from './components/WelcomeModal';
 import type { Task, TaskStatus, TaskCategory, TaskPriority, AppTheme } from './types';
 import { playTaskCompleteSound, playClickSound } from './utils/audio';
 import { triggerConfetti } from './utils/confetti';
@@ -108,6 +109,9 @@ export default function App() {
   });
 
   // --- Workspace States ---
+  const [username, setUsername] = useState<string>(() => {
+    return localStorage.getItem('auratask_username') || '';
+  });
   const [currentView, setView] = useState<'dashboard' | 'board' | 'list' | 'calendar' | 'focus' | 'themes'>('dashboard');
   const [activeCategory, setCategory] = useState<TaskCategory | 'all'>('all');
   const [activePriority, setPriority] = useState<TaskPriority | 'all'>('all');
@@ -436,7 +440,7 @@ export default function App() {
         {/* View Layout Renderer */}
         <main className="view-container">
           {currentView === 'dashboard' && (
-            <DashboardView tasks={tasks} totalFocusTime={totalFocusTime} />
+            <DashboardView tasks={tasks} totalFocusTime={totalFocusTime} username={username} />
           )}
 
           {currentView === 'board' && (
@@ -513,6 +517,16 @@ export default function App() {
         <AiTaskModal
           onSave={handleSaveAiTask}
           onClose={() => setIsAiTaskModalOpen(false)}
+        />
+      )}
+
+      {/* Welcome Greeting Prompt overlay for first-time visitors */}
+      {!username && (
+        <WelcomeModal
+          onSaveName={(name) => {
+            localStorage.setItem('auratask_username', name);
+            setUsername(name);
+          }}
         />
       )}
 
