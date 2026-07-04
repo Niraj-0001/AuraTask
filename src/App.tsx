@@ -8,6 +8,7 @@ import { CalendarView } from './components/CalendarView';
 import { TaskModal } from './components/TaskModal';
 import { FocusHubView } from './components/FocusHubView';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
+import { parseAiPrompt, fetchGeminiParsedTask, AiTaskModal } from './components/AiTaskModal';
 import type { Task, TaskStatus, TaskCategory, TaskPriority, AppTheme } from './types';
 import { playTaskCompleteSound, playClickSound } from './utils/audio';
 import { triggerConfetti } from './utils/confetti';
@@ -251,6 +252,30 @@ export default function App() {
     setIsAiTaskModalOpen(false);
   };
 
+  const handleSaveAiTaskPrompt = async (promptText: string) => {
+    const apiKey = localStorage.getItem('auratask_gemini_api_key') || '';
+    let taskData;
+    if (apiKey) {
+      try {
+        taskData = await fetchGeminiParsedTask(apiKey, promptText);
+      } catch (err) {
+        console.error("Gemini API failed, falling back to local:", err);
+        taskData = parseAiPrompt(promptText);
+      }
+    } else {
+      taskData = parseAiPrompt(promptText);
+    }
+
+    const newTask: Task = {
+      ...taskData,
+      id: crypto.randomUUID(),
+      timeSpent: 0,
+      createdAt: new Date().toISOString(),
+      status: 'todo'
+    } as Task;
+    setTasks(prev => [newTask, ...prev]);
+  };
+
   const handleDeleteTask = (taskId: string) => {
     playClickSound();
     setDeletingTaskId(taskId);
@@ -373,11 +398,15 @@ export default function App() {
       <div className="main-content">
         {/* Header */}
         <Header
-          onSaveAiTask={handleSaveAiTask}
+          onSaveAiTask={handleSaveAiTaskPrompt}
           onAddTaskClick={() => handleOpenAddTaskModal()}
           onOpenKeyboardShortcuts={() => {
             playClickSound();
             setIsShortcutsOpen(true);
+          }}
+          onOpenAiModal={() => {
+            playClickSound();
+            setIsAiTaskModalOpen(true);
           }}
         />
 
@@ -425,6 +454,7 @@ export default function App() {
               activeTaskId={timerActiveTaskId}
               onAddTaskFocusTime={handleAddTaskFocusTime}
               clearActiveTaskId={() => setTimerActiveTaskId(null)}
+              onUpdateTaskStatus={handleUpdateTaskStatus}
             />
           )}
         </main>

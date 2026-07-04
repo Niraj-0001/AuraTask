@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { Task } from '../types';
+import type { Task, TaskStatus } from '../types';
 import { 
   Play, 
   Pause, 
@@ -83,6 +83,7 @@ interface FocusHubViewProps {
   activeTaskId: string | null;
   onAddTaskFocusTime: (taskId: string, seconds: number) => void;
   clearActiveTaskId: () => void;
+  onUpdateTaskStatus: (taskId: string, status: TaskStatus) => void;
 }
 
 type ModeType = 'timer' | 'stopwatch';
@@ -93,7 +94,8 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
   tasks,
   activeTaskId,
   onAddTaskFocusTime,
-  clearActiveTaskId
+  clearActiveTaskId,
+  onUpdateTaskStatus
 }) => {
   const [activeTab, setActiveTab] = useState<ModeType>('timer');
   const [sizeMode, setSizeMode] = useState<SizeMode>('normal');
@@ -227,17 +229,50 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
     setIsEditingDurations(false);
   };
 
-  // --- STOPWATCH LOGIC ---
+  // --- STOPWATCH LOGIC & TIME KEEPING REFS ---
+  const lastSavedStopwatchTimeRef = useRef(0);
+  const latestStopwatchTimeRef = useRef(stopwatchTime);
+  const latestTaskIdRef = useRef(associatedStopwatchTaskId);
+
+  // Keep refs synchronized with state
+  useEffect(() => {
+    latestStopwatchTimeRef.current = stopwatchTime;
+  }, [stopwatchTime]);
+
+  useEffect(() => {
+    latestTaskIdRef.current = associatedStopwatchTaskId;
+  }, [associatedStopwatchTaskId]);
+
+  const saveUnsavedStopwatchTime = (taskId: string, currentStopwatchTime: number) => {
+    if (!taskId) return;
+    const diff = currentStopwatchTime - lastSavedStopwatchTimeRef.current;
+    if (diff > 0) {
+      onAddTaskFocusTime(taskId, diff);
+      lastSavedStopwatchTimeRef.current = currentStopwatchTime;
+    }
+  };
+
+  // Save remaining focus time on unmount or tab switch/view change
+  useEffect(() => {
+    return () => {
+      if (latestTaskIdRef.current) {
+        const diff = latestStopwatchTimeRef.current - lastSavedStopwatchTimeRef.current;
+        if (diff > 0) {
+          onAddTaskFocusTime(latestTaskIdRef.current, diff);
+        }
+      }
+    };
+  }, [onAddTaskFocusTime]);
+
   useEffect(() => {
     if (isStopwatchRunning) {
       stopwatchIntervalRef.current = setInterval(() => {
-        setStopwatchTime(prev => {
-          const next = prev + 1;
-          if (associatedStopwatchTaskId && next % 10 === 0) {
-            onAddTaskFocusTime(associatedStopwatchTaskId, 10);
-          }
-          return next;
-        });
+        setStopwatchTime(prev => prev + 1);
+        const nextTime = latestStopwatchTimeRef.current + 1;
+        if (associatedStopwatchTaskId && nextTime - lastSavedStopwatchTimeRef.current >= 10) {
+          onAddTaskFocusTime(associatedStopwatchTaskId, 10);
+          lastSavedStopwatchTimeRef.current += 10;
+        }
       }, 1000);
     } else {
       if (stopwatchIntervalRef.current) clearInterval(stopwatchIntervalRef.current);
@@ -246,23 +281,34 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
     return () => {
       if (stopwatchIntervalRef.current) clearInterval(stopwatchIntervalRef.current);
     };
-  }, [isStopwatchRunning, associatedStopwatchTaskId]);
+  }, [isStopwatchRunning, associatedStopwatchTaskId, onAddTaskFocusTime]);
 
   const toggleStopwatch = () => {
     playClickSound();
-    setIsStopwatchRunning(!isStopwatchRunning);
+    const nextRunning = !isStopwatchRunning;
+    if (!nextRunning && associatedStopwatchTaskId) {
+      saveUnsavedStopwatchTime(associatedStopwatchTaskId, stopwatchTime);
+    } else if (nextRunning) {
+      lastSavedStopwatchTimeRef.current = stopwatchTime;
+    }
+    setIsStopwatchRunning(nextRunning);
   };
 
   const resetStopwatch = () => {
     playClickSound();
+    if (associatedStopwatchTaskId) {
+      saveUnsavedStopwatchTime(associatedStopwatchTaskId, stopwatchTime);
+    }
     setIsStopwatchRunning(false);
     setStopwatchTime(0);
+    lastSavedStopwatchTimeRef.current = 0;
   };
 
   const handleSaveStopwatchEdit = () => {
     playClickSound();
     const finalSecs = (editStopwatchHours * 3600) + (editStopwatchMins * 60) + editStopwatchSecs;
     setStopwatchTime(finalSecs);
+    lastSavedStopwatchTimeRef.current = finalSecs;
     setIsEditingStopwatch(false);
   };
 
@@ -276,6 +322,21 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
     setEditStopwatchMins(mins);
     setEditStopwatchSecs(secs);
     setIsEditingStopwatch(true);
+  };
+
+  const handleCompleteStopwatchTask = () => {
+    if (!associatedStopwatchTaskId) return;
+    
+    // Save unsaved seconds
+    saveUnsavedStopwatchTime(associatedStopwatchTaskId, stopwatchTime);
+    // Pause stopwatch
+    setIsStopwatchRunning(false);
+    // Complete task
+    onUpdateTaskStatus(associatedStopwatchTaskId, 'completed');
+    // Clear select
+    setAssociatedStopwatchTaskId('');
+    // Reset baseline tracking
+    lastSavedStopwatchTimeRef.current = 0;
   };
 
   // Format Helpers
@@ -470,6 +531,32 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
                   {isStopwatchRunning ? <Pause className="w-6 h-6 fill-white" /> : <Play className="w-6 h-6 fill-white ml-0.5" />}
                 </button>
               </div>
+
+              {activeTask && (
+                <button
+                  onClick={handleCompleteStopwatchTask}
+                  className="fullscreen-control-btn glow-btn animate-scale-in"
+                  style={{ 
+                    marginTop: '24px',
+                    padding: '12px 24px',
+                    borderRadius: '30px',
+                    background: 'linear-gradient(135deg, var(--accent) 0%, #10b981 100%)',
+                    border: 'none',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)'
+                  }}
+                  title="Mark Task as Completed"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Complete Task</span>
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -701,14 +788,45 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
                 <span className="timer-select-title" style={{ marginBottom: '6px' }}>Assigned Stopwatch Task</span>
                 <CustomSelect
                   value={associatedStopwatchTaskId}
-                  onChange={(val) => setAssociatedStopwatchTaskId(val)}
+                  onChange={(val) => {
+                    if (associatedStopwatchTaskId) {
+                      saveUnsavedStopwatchTime(associatedStopwatchTaskId, stopwatchTime);
+                    }
+                    setAssociatedStopwatchTaskId(val);
+                    lastSavedStopwatchTimeRef.current = stopwatchTime;
+                  }}
                   options={taskOptions}
                 />
                 {associatedStopwatchTaskId && (
-                  <p className="timer-log-msg">
-                    <CheckCircle2 className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} /> 
-                    <span>Time increments will auto-save to this task</span>
-                  </p>
+                  <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <p className="timer-log-msg">
+                      <CheckCircle2 className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} /> 
+                      <span>Time increments will auto-save to this task</span>
+                    </p>
+                    <button
+                      onClick={handleCompleteStopwatchTask}
+                      className="primary-btn glow-btn animate-scale-in"
+                      style={{ 
+                        marginTop: '4px',
+                        width: '100%', 
+                        justifyContent: 'center', 
+                        background: 'linear-gradient(135deg, var(--accent) 0%, #10b981 100%)',
+                        border: 'none',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '10px 16px',
+                        borderRadius: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)'
+                      }}
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      Complete Task
+                    </button>
+                  </div>
                 )}
               </div>
             </>
