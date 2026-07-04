@@ -512,10 +512,37 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
               </div>
 
               {activeTask && (
-                <div className="fullscreen-task-badge">
-                  <CheckCircle2 className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
+                <button
+                  onClick={handleCompleteStopwatchTask}
+                  className="fullscreen-task-badge"
+                  style={{
+                    cursor: 'pointer',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    padding: '8px 16px',
+                    borderRadius: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'all 0.22s ease',
+                    color: 'var(--text-primary)',
+                    fontFamily: 'var(--font-sans)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                    e.currentTarget.style.borderColor = '#10b981';
+                    e.currentTarget.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                  title="Click to complete this task"
+                >
+                  <CheckCircle2 className="w-4 h-4" style={{ color: 'var(--accent)' }} />
                   <span>Tracking: <strong>{activeTask.title}</strong></span>
-                </div>
+                </button>
               )}
 
               <div className="fullscreen-controls">
@@ -531,32 +558,6 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
                   {isStopwatchRunning ? <Pause className="w-6 h-6 fill-white" /> : <Play className="w-6 h-6 fill-white ml-0.5" />}
                 </button>
               </div>
-
-              {activeTask && (
-                <button
-                  onClick={handleCompleteStopwatchTask}
-                  className="fullscreen-control-btn glow-btn animate-scale-in"
-                  style={{ 
-                    marginTop: '24px',
-                    padding: '12px 24px',
-                    borderRadius: '30px',
-                    background: 'linear-gradient(135deg, var(--accent) 0%, #10b981 100%)',
-                    border: 'none',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)'
-                  }}
-                  title="Mark Task as Completed"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Complete Task</span>
-                </button>
-              )}
             </div>
           )}
         </div>
