@@ -97,38 +97,81 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
   clearActiveTaskId,
   onUpdateTaskStatus
 }) => {
-  const [activeTab, setActiveTab] = useState<ModeType>('timer');
+  const [activeTab, setActiveTab] = useState<ModeType>(() => {
+    return (localStorage.getItem('auratask_focushub_tab') as ModeType) || 'timer';
+  });
   const [sizeMode, setSizeMode] = useState<SizeMode>('normal');
 
   // --- TIMER STATE ---
-  const [timerMode, setTimerMode] = useState<TimerMode>('study');
-  const [associatedTaskId, setAssociatedTaskId] = useState<string>('');
+  const [timerMode, setTimerMode] = useState<TimerMode>(() => {
+    return (localStorage.getItem('auratask_timer_mode') as TimerMode) || 'study';
+  });
+  const [associatedTaskId, setAssociatedTaskId] = useState<string>(() => {
+    return localStorage.getItem('auratask_timer_task_id') || '';
+  });
   
-  const [durations, setDurations] = useState<Record<TimerMode, number>>({
-    study: 25,
-    short_break: 5,
-    long_break: 15
+  const [durations, setDurations] = useState<Record<TimerMode, number>>(() => {
+    const stored = localStorage.getItem('auratask_timer_durations');
+    return stored ? JSON.parse(stored) : { study: 25, short_break: 5, long_break: 15 };
   });
   
   const [isEditingDurations, setIsEditingDurations] = useState(false);
   const [editDurations, setEditDurations] = useState(durations);
 
-  const [timeLeft, setTimeLeft] = useState(durations.study * 60);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [totalSeconds, setTotalSeconds] = useState(durations.study * 60);
+  // Synchronously compute timer catch-up on initialization
+  const timerInit = (() => {
+    const savedTimeLeft = Number(localStorage.getItem('auratask_timer_time_left') ?? (25 * 60));
+    const wasRunning = localStorage.getItem('auratask_timer_running') === 'true';
+    const lastActive = Number(localStorage.getItem('auratask_timer_last_time') || 0);
+
+    if (wasRunning && lastActive > 0) {
+      const elapsed = Math.floor((Date.now() - lastActive) / 1000);
+      if (elapsed >= savedTimeLeft) {
+        return { timeLeft: 0, isRunning: false, elapsedUsed: savedTimeLeft };
+      } else {
+        return { timeLeft: savedTimeLeft - elapsed, isRunning: true, elapsedUsed: elapsed };
+      }
+    }
+    return { timeLeft: savedTimeLeft, isRunning: wasRunning, elapsedUsed: 0 };
+  })();
+
+  const [timeLeft, setTimeLeft] = useState<number>(timerInit.timeLeft);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(timerInit.isRunning);
+  const [totalSeconds, setTotalSeconds] = useState<number>(() => {
+    const stored = localStorage.getItem('auratask_timer_total_seconds');
+    return stored ? Number(stored) : 25 * 60;
+  });
 
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // --- STOPWATCH STATE ---
-  const [stopwatchTime, setStopwatchTime] = useState(0);
-  const [isStopwatchRunning, setIsStopwatchRunning] = useState(false);
-  const [associatedStopwatchTaskId, setAssociatedStopwatchTaskId] = useState<string>('');
+  // Synchronously compute stopwatch catch-up on initialization
+  const stopwatchInit = (() => {
+    const savedTime = Number(localStorage.getItem('auratask_stopwatch_time') || 0);
+    const wasRunning = localStorage.getItem('auratask_stopwatch_running') === 'true';
+    const lastActive = Number(localStorage.getItem('auratask_stopwatch_last_time') || 0);
+
+    if (wasRunning && lastActive > 0) {
+      const elapsed = Math.floor((Date.now() - lastActive) / 1000);
+      return { time: savedTime + elapsed, isRunning: true, elapsedUsed: elapsed };
+    }
+    return { time: savedTime, isRunning: wasRunning, elapsedUsed: 0 };
+  })();
+
+  const [stopwatchTime, setStopwatchTime] = useState<number>(stopwatchInit.time);
+  const [isStopwatchRunning, setIsStopwatchRunning] = useState<boolean>(stopwatchInit.isRunning);
+  const [associatedStopwatchTaskId, setAssociatedStopwatchTaskId] = useState<string>(() => {
+    return localStorage.getItem('auratask_stopwatch_task_id') || '';
+  });
   const [isEditingStopwatch, setIsEditingStopwatch] = useState(false);
   const [editStopwatchHours, setEditStopwatchHours] = useState(0);
   const [editStopwatchMins, setEditStopwatchMins] = useState(0);
   const [editStopwatchSecs, setEditStopwatchSecs] = useState(0);
 
   const stopwatchIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const prevTimerModeRef = useRef<TimerMode>(timerMode);
+  const prevDurationsRef = useRef<string>(JSON.stringify(durations));
 
   // Sync active task from global trigger
   useEffect(() => {
@@ -163,14 +206,75 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
     },
   };
 
+  // --- LOCAL STORAGE PERSISTENCE EFFECTS ---
+  useEffect(() => {
+    localStorage.setItem('auratask_focushub_tab', activeTab);
+  }, [activeTab]);
+
+  useEffect(() => {
+    localStorage.setItem('auratask_timer_mode', timerMode);
+    localStorage.setItem('auratask_timer_task_id', associatedTaskId);
+    localStorage.setItem('auratask_timer_time_left', timeLeft.toString());
+    localStorage.setItem('auratask_timer_running', isTimerRunning.toString());
+    localStorage.setItem('auratask_timer_total_seconds', totalSeconds.toString());
+    if (isTimerRunning) {
+      localStorage.setItem('auratask_timer_last_time', Date.now().toString());
+    }
+  }, [timerMode, associatedTaskId, timeLeft, isTimerRunning, totalSeconds]);
+
+  useEffect(() => {
+    localStorage.setItem('auratask_stopwatch_time', stopwatchTime.toString());
+    localStorage.setItem('auratask_stopwatch_running', isStopwatchRunning.toString());
+    localStorage.setItem('auratask_stopwatch_task_id', associatedStopwatchTaskId);
+    if (isStopwatchRunning) {
+      localStorage.setItem('auratask_stopwatch_last_time', Date.now().toString());
+    }
+  }, [stopwatchTime, isStopwatchRunning, associatedStopwatchTaskId]);
+
+  // --- MOUNT CATCH-UP LOGIC (SIDE EFFECTS ONLY) ---
+  useEffect(() => {
+    // 1. Timer completed while away
+    if (timerInit.elapsedUsed > 0 && timerInit.timeLeft === 0) {
+      playTimerCompleteSound();
+      if (timerMode === 'study' && associatedTaskId) {
+        onAddTaskFocusTime(associatedTaskId, timerInit.elapsedUsed);
+      }
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(`${timerConfigs[timerMode].label} Complete! 🎉`, {
+          body: timerMode === 'study'
+            ? 'Great job! Time for a short break.'
+            : 'Break over! Ready to focus again?',
+          icon: `${import.meta.env.BASE_URL}favicon.svg`
+        });
+      }
+    } 
+    // 2. Timer still running, log elapsed time spent in focus state
+    else if (timerInit.elapsedUsed > 0 && timerMode === 'study' && associatedTaskId) {
+      onAddTaskFocusTime(associatedTaskId, timerInit.elapsedUsed);
+    }
+
+    // 3. Stopwatch running, log elapsed time and sync ref baseline
+    if (stopwatchInit.elapsedUsed > 0 && associatedStopwatchTaskId) {
+      onAddTaskFocusTime(associatedStopwatchTaskId, stopwatchInit.elapsedUsed);
+      lastSavedStopwatchTimeRef.current = stopwatchInit.time;
+    }
+  }, []);
+
   // --- TIMER EFFECTS & LOGIC ---
   useEffect(() => {
-    if (!isTimerRunning) {
+    const durationsStr = JSON.stringify(durations);
+    const modeChanged = prevTimerModeRef.current !== timerMode;
+    const durationsChanged = prevDurationsRef.current !== durationsStr;
+
+    if (!isTimerRunning && (modeChanged || durationsChanged)) {
       const targetMins = durations[timerMode];
       setTimeLeft(targetMins * 60);
       setTotalSeconds(targetMins * 60);
     }
-  }, [timerMode, durations]);
+    
+    prevTimerModeRef.current = timerMode;
+    prevDurationsRef.current = durationsStr;
+  }, [timerMode, durations, isTimerRunning]);
 
   useEffect(() => {
     if (isTimerRunning) {
@@ -185,7 +289,16 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
               onAddTaskFocusTime(associatedTaskId, totalSeconds);
             }
             
-            alert(`${timerConfigs[timerMode].label} complete!`);
+            if ('Notification' in window && Notification.permission === 'granted') {
+               new Notification(`${timerConfigs[timerMode].label} Complete! 🎉`, {
+                 body: timerMode === 'study'
+                   ? 'Great job! Time for a short break.'
+                   : 'Break over! Ready to focus again?',
+                 icon: `${import.meta.env.BASE_URL}favicon.svg`
+               });
+             } else {
+               alert(`${timerConfigs[timerMode].label} complete!`);
+             }
             return 0;
           }
           
@@ -226,6 +339,7 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
   const saveCustomDurations = () => {
     playClickSound();
     setDurations(editDurations);
+    localStorage.setItem('auratask_timer_durations', JSON.stringify(editDurations));
     setIsEditingDurations(false);
   };
 

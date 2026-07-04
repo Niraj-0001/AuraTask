@@ -155,6 +155,42 @@ export default function App() {
     }, 50);
   }, [theme]);
 
+  // --- Request Notification Permission and Check Daily/Overdue Tasks on Mount ---
+  useEffect(() => {
+    const requestAndCheck = async () => {
+      if ('Notification' in window) {
+        if (Notification.permission === 'default') {
+          await Notification.requestPermission();
+        }
+        if (Notification.permission === 'granted') {
+          // Delay slightly so the user is not spammed instantly on screen paint
+          setTimeout(() => {
+            const todayStr = new Date().toLocaleDateString('sv');
+            
+            const dueToday = tasks.filter(t => t.status !== 'completed' && t.dueDate === todayStr);
+            const overdue = tasks.filter(t => t.status !== 'completed' && t.dueDate && t.dueDate < todayStr);
+
+            if (dueToday.length > 0) {
+              new Notification(`Today's Tasks 📅`, {
+                body: `You have ${dueToday.length} task(s) scheduled for today.`,
+                icon: `${import.meta.env.BASE_URL}favicon.svg`
+              });
+            }
+
+            if (overdue.length > 0) {
+              new Notification(`Overdue Tasks ⚠️`, {
+                body: `Attention! You have ${overdue.length} overdue task(s) that need review.`,
+                icon: `${import.meta.env.BASE_URL}favicon.svg`
+              });
+            }
+          }, 1800);
+        }
+      }
+    };
+    
+    requestAndCheck();
+  }, []);
+
   // --- Keyboard Shortcuts Listeners ---
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -241,6 +277,9 @@ export default function App() {
   };
 
   const handleSaveTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'timeSpent'> & { id?: string }) => {
+    const todayStr = new Date().toLocaleDateString('sv');
+    const isDueToday = taskData.dueDate === todayStr;
+
     if (taskData.id) {
       // Editing Mode
       setTasks(prev =>
@@ -250,6 +289,13 @@ export default function App() {
             : t
         )
       );
+
+      if (isDueToday && 'Notification' in window && Notification.permission === 'granted') {
+        new Notification(`Task Scheduled for Today 📅`, {
+          body: `"${taskData.title}" is scheduled for today.`,
+          icon: `${import.meta.env.BASE_URL}favicon.svg`
+        });
+      }
     } else {
       // Creation Mode
       const newTask: Task = {
@@ -259,6 +305,13 @@ export default function App() {
         createdAt: new Date().toISOString()
       } as Task;
       setTasks(prev => [newTask, ...prev]);
+
+      if (isDueToday && 'Notification' in window && Notification.permission === 'granted') {
+        new Notification(`Task Added for Today 📅`, {
+          body: `"${taskData.title}" is due today.`,
+          icon: `${import.meta.env.BASE_URL}favicon.svg`
+        });
+      }
     }
     setIsTaskModalOpen(false);
     setEditingTask(null);
@@ -272,6 +325,14 @@ export default function App() {
       createdAt: new Date().toISOString()
     } as Task;
     setTasks(prev => [newTask, ...prev]);
+
+    const todayStr = new Date().toLocaleDateString('sv');
+    if (taskData.dueDate === todayStr && 'Notification' in window && Notification.permission === 'granted') {
+      new Notification(`AI Task Scheduled for Today 📅`, {
+        body: `"${taskData.title}" is scheduled for today.`,
+        icon: `${import.meta.env.BASE_URL}favicon.svg`
+      });
+    }
     setIsAiTaskModalOpen(false);
   };
 
