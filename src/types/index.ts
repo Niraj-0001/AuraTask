@@ -28,4 +28,4 @@ export interface TaskFilter {
   category: TaskCategory | 'all';
 }
 
-export type AppTheme = 'light' | 'dark' | 'cyberpunk' | 'emerald' | 'sunset' | 'ocean';
+export type AppTheme = 'light' | 'dark' | 'cyberpunk' | 'emerald' | 'sunset' | 'ocean' | 'tokyo' | 'nordic' | 'minimal' | 'github' | 'solarized' | 'nebula';

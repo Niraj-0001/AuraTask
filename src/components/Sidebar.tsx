@@ -12,14 +12,22 @@ import {
   X, 
   Clock,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  ChevronDown,
+  BookOpen,
+  User,
+  ShoppingCart,
+  Activity,
+  Lightbulb,
+  Compass,
+  Grid
 } from 'lucide-react';
 import type { AppTheme, TaskCategory, TaskPriority } from '../types';
 import { playClickSound } from '../utils/audio';
 
 interface SidebarProps {
-  currentView: 'dashboard' | 'board' | 'list' | 'calendar' | 'focus';
-  setView: (view: 'dashboard' | 'board' | 'list' | 'calendar' | 'focus') => void;
+  currentView: 'dashboard' | 'board' | 'list' | 'calendar' | 'focus' | 'themes';
+  setView: (view: 'dashboard' | 'board' | 'list' | 'calendar' | 'focus' | 'themes') => void;
   activeCategory: TaskCategory | 'all';
   setCategory: (cat: TaskCategory | 'all') => void;
   activePriority: TaskPriority | 'all';
@@ -31,6 +39,16 @@ interface SidebarProps {
   totalFocusTime: number; // in seconds
   onOpenFocusHub: () => void;
 }
+
+const LogoIcon = () => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="currentColor"
+    style={{ width: '16px', height: '16px' }}
+  >
+    <path d="m20 13.5v5c0 3.032-2.468 5.5-5.5 5.5h-9c-3.032 0-5.5-2.468-5.5-5.5v-13c0-3.033 2.468-5.5 5.5-5.5h8c.828 0 1.5.671 1.5 1.5s-.672 1.5-1.5 1.5h-8c-1.379 0-2.5 1.122-2.5 2.5v13c0 1.379 1.121 2.5 2.5 2.5h9c1.379 0 2.5-1.121 2.5-2.5v-5c0-.829.672-1.5 1.5-1.5s1.5.671 1.5 1.5zm3.512-12.651c-.875-1.07-2.456-1.129-3.409-.176l-5.808 5.808c-.813.813-1.269 1.915-1.269 3.064v.955c0 .276.224.5.5.5h.955c1.149 0 2.252-.457 3.064-1.269l5.715-5.715c.85-.85 1.013-2.236.252-3.167zm-15.008 13.61-1.263 1.229-.222-.205c-.608-.563-1.558-.527-2.12.081-.563.607-.527 1.557.081 2.12l.737.681c.409.41.954.636 1.533.636s1.124-.226 1.509-.612l1.821-1.763c.598-.572.619-1.522.046-2.12-.574-.599-1.522-.619-2.121-.046zm2.121-5.954c-.574-.599-1.522-.619-2.121-.046l-1.263 1.229-.222-.205c-.608-.563-1.558-.527-2.12.081-.563.607-.527 1.557.081 2.12l.737.681c.409.41.954.636 1.533.636s1.124-.226 1.509-.612l1.821-1.763c.598-.572.619-1.522.046-2.12zm2.875 10.496c.828 0 1.5-.671 1.5-1.5s-.672-1.5-1.5-1.5h-.083c-.829 0-1.458.671-1.458 1.5s.713 1.5 1.542 1.5z"/>
+  </svg>
+);
 
 export const Sidebar: React.FC<SidebarProps> = ({
   currentView,
@@ -47,6 +65,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenFocusHub
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [isPrioritiesOpen, setIsPrioritiesOpen] = useState(false);
 
   const views: { id: typeof currentView; label: string; icon: React.ReactNode }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -54,16 +74,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'list', label: 'List View', icon: <ListTodo className="w-4 h-4" /> },
     { id: 'calendar', label: 'Calendar', icon: <Calendar className="w-4 h-4" /> },
     { id: 'focus', label: 'Focus Hub', icon: <Clock className="w-4 h-4" /> },
+    { id: 'themes', label: 'Theme Studio', icon: <Sparkles className="w-4 h-4" /> },
   ];
 
-  const categories: { id: TaskCategory | 'all'; label: string }[] = [
-    { id: 'all', label: 'All Projects' },
-    { id: 'study', label: 'Study' },
-    { id: 'personal', label: 'Personal' },
-    { id: 'shopping', label: 'Shopping' },
-    { id: 'health', label: 'Health & Wellness' },
-    { id: 'ideas', label: 'Ideas & Brainstorm' },
-    { id: 'other', label: 'Other' },
+  const categories: { id: TaskCategory | 'all'; label: string; icon: React.ReactNode; color: string }[] = [
+    { id: 'all', label: 'All Projects', icon: <Grid className="w-3.5 h-3.5" />, color: 'var(--text-muted)' },
+    { id: 'study', label: 'Study', icon: <BookOpen className="w-3.5 h-3.5" />, color: 'var(--cat-study)' },
+    { id: 'personal', label: 'Personal', icon: <User className="w-3.5 h-3.5" />, color: 'var(--cat-personal)' },
+    { id: 'shopping', label: 'Shopping', icon: <ShoppingCart className="w-3.5 h-3.5" />, color: 'var(--cat-shopping)' },
+    { id: 'health', label: 'Health & Wellness', icon: <Activity className="w-3.5 h-3.5" />, color: 'var(--cat-health)' },
+    { id: 'ideas', label: 'Ideas & Brainstorm', icon: <Lightbulb className="w-3.5 h-3.5" />, color: 'var(--cat-ideas)' },
+    { id: 'other', label: 'Other', icon: <Compass className="w-3.5 h-3.5" />, color: 'var(--cat-other)' },
   ];
 
   const priorities: { id: TaskPriority | 'all'; label: string }[] = [
@@ -72,15 +93,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'high', label: 'High' },
     { id: 'medium', label: 'Medium' },
     { id: 'low', label: 'Low' },
-  ];
-
-  const themes: { id: AppTheme; label: string; icon: React.ReactNode }[] = [
-    { id: 'dark', label: 'Void', icon: <Moon className="w-3.5 h-3.5" /> },
-    { id: 'light', label: 'Light', icon: <Sun className="w-3.5 h-3.5" /> },
-    { id: 'cyberpunk', label: 'Cyber', icon: <Sparkles className="w-3.5 h-3.5" /> },
-    { id: 'emerald', label: 'Forest', icon: <Folder className="w-3.5 h-3.5" /> },
-    { id: 'sunset', label: 'Sunset', icon: <Flame className="w-3.5 h-3.5" /> },
-    { id: 'ocean', label: 'Ocean', icon: <Clock className="w-3.5 h-3.5" /> },
   ];
 
   const formatFocusTime = (seconds: number) => {
@@ -119,7 +131,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Header Toggle */}
       <div className="mobile-header">
         <div className="sidebar-brand" style={{ marginBottom: 0 }}>
-          <div className="brand-icon">Ω</div>
+          <div className="brand-icon">
+            <LogoIcon />
+          </div>
           <span className="brand-name">AURA.TASK</span>
         </div>
         <button 
@@ -135,7 +149,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Brand Logo */}
         <div className="sidebar-brand">
-          <div className="brand-icon">Ω</div>
+          <div className="brand-icon">
+            <LogoIcon />
+          </div>
           <span className="brand-name">AuraTask</span>
         </div>
 
@@ -157,68 +173,90 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Scrollable Filters Section */}
         <div className="sidebar-scroll">
           
-          {/* Projects/Categories */}
-          <div className="sidebar-title">Projects</div>
-          <div className="filter-list">
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => handleCategoryChange(cat.id)}
-                className={`filter-item ${activeCategory === cat.id ? 'active' : ''}`}
-              >
-                <div className="filter-label">
-                  <span 
-                    className="column-dot" 
-                    style={{ 
-                      width: '8px', 
-                      height: '8px', 
-                      backgroundColor: cat.id === 'all' ? 'var(--text-muted)' : `var(--cat-${cat.id})` 
-                    }}
-                  />
-                  <span>{cat.label}</span>
-                </div>
-              </button>
-            ))}
+          {/* Projects/Categories Dropdown Toggle */}
+          <div 
+            className="sidebar-title"
+            onClick={() => { playClickSound(); setIsCategoriesOpen(!isCategoriesOpen); }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
+            title="Show/Hide Projects"
+          >
+            <span>Projects</span>
+            <ChevronDown 
+              size={14} 
+              style={{ 
+                transform: isCategoriesOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
+                transition: 'transform 0.22s ease-in-out',
+                color: 'var(--text-secondary)'
+              }} 
+            />
           </div>
+          {isCategoriesOpen && (
+            <div className="filter-list animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => handleCategoryChange(cat.id)}
+                  className={`filter-item ${activeCategory === cat.id ? 'active' : ''}`}
+                >
+                  <div className="filter-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span 
+                      className="filter-icon" 
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: activeCategory === cat.id ? 'var(--accent)' : cat.color 
+                      }}
+                    >
+                      {cat.icon}
+                    </span>
+                    <span>{cat.label}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
 
-          {/* Priorities */}
-          <div className="sidebar-title">Priorities</div>
-          <div className="filter-list">
-            {priorities.map(prio => (
-              <button
-                key={prio.id}
-                onClick={() => handlePriorityChange(prio.id)}
-                className={`filter-item ${activePriority === prio.id ? 'active' : ''}`}
-              >
-                <div className="filter-label">
-                  <span 
-                    className="column-dot" 
-                    style={{ 
-                      width: '8px', 
-                      height: '8px', 
-                      backgroundColor: prio.id === 'all' ? 'var(--text-muted)' : `var(--priority-${prio.id})` 
-                    }}
-                  />
-                  <span>{prio.label}</span>
-                </div>
-              </button>
-            ))}
+          {/* Priorities Dropdown Toggle */}
+          <div 
+            className="sidebar-title"
+            onClick={() => { playClickSound(); setIsPrioritiesOpen(!isPrioritiesOpen); }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
+            title="Show/Hide Priorities"
+          >
+            <span>Priorities</span>
+            <ChevronDown 
+              size={14} 
+              style={{ 
+                transform: isPrioritiesOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
+                transition: 'transform 0.22s ease-in-out',
+                color: 'var(--text-secondary)'
+              }} 
+            />
           </div>
-
-          {/* Theme Selector */}
-          <div className="sidebar-title">Aesthetic Theme</div>
-          <div className="theme-grid">
-            {themes.map(t => (
-              <button
-                key={t.id}
-                onClick={() => handleThemeChange(t.id)}
-                className={`theme-btn ${theme === t.id ? 'active' : ''}`}
-              >
-                {t.icon}
-                <span>{t.label}</span>
-              </button>
-            ))}
-          </div>
+          {isPrioritiesOpen && (
+            <div className="filter-list animate-slide-up" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {priorities.map(prio => (
+                <button
+                  key={prio.id}
+                  onClick={() => handlePriorityChange(prio.id)}
+                  className={`filter-item ${activePriority === prio.id ? 'active' : ''}`}
+                >
+                  <div className="filter-label">
+                    <span 
+                      className="column-dot" 
+                      style={{ 
+                        width: '8px', 
+                        height: '8px', 
+                        backgroundColor: prio.id === 'all' ? 'var(--text-muted)' : `var(--priority-${prio.id})` 
+                      }}
+                    />
+                    <span>{prio.label}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Stats Widget & Pomodoro Trigger */}

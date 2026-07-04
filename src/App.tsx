@@ -9,6 +9,8 @@ import { TaskModal } from './components/TaskModal';
 import { FocusHubView } from './components/FocusHubView';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { parseAiPrompt, fetchGeminiParsedTask, AiTaskModal } from './components/AiTaskModal';
+import { FullScreenClock } from './components/FullScreenClock';
+import { ThemeSelectView } from './components/ThemeSelectView';
 import type { Task, TaskStatus, TaskCategory, TaskPriority, AppTheme } from './types';
 import { playTaskCompleteSound, playClickSound } from './utils/audio';
 import { triggerConfetti } from './utils/confetti';
@@ -106,7 +108,7 @@ export default function App() {
   });
 
   // --- Workspace States ---
-  const [currentView, setView] = useState<'dashboard' | 'board' | 'list' | 'calendar' | 'focus'>('dashboard');
+  const [currentView, setView] = useState<'dashboard' | 'board' | 'list' | 'calendar' | 'focus' | 'themes'>('dashboard');
   const [activeCategory, setCategory] = useState<TaskCategory | 'all'>('all');
   const [activePriority, setPriority] = useState<TaskPriority | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,6 +117,7 @@ export default function App() {
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isAiTaskModalOpen, setIsAiTaskModalOpen] = useState(false);
+  const [isFullScreenClockOpen, setIsFullScreenClockOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskModalInitialStatus, setTaskModalInitialStatus] = useState<TaskStatus>('todo');
   const [taskModalInitialDueDate, setTaskModalInitialDueDate] = useState<string>('');
@@ -134,6 +137,18 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('auratask_theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
+
+    // Dynamic Favicon Color Matching active theme's accent
+    setTimeout(() => {
+      const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+      if (accentColor) {
+        const svgString = `<svg id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m20 13.5v5c0 3.032-2.468 5.5-5.5 5.5h-9c-3.032 0-5.5-2.468-5.5-5.5v-13c0-3.033 2.468-5.5 5.5-5.5h8c.828 0 1.5.671 1.5 1.5s-.672 1.5-1.5 1.5h-8c-1.379 0-2.5 1.122-2.5 2.5v13c0 1.379 1.121 2.5 2.5 2.5h9c1.379 0 2.5-1.121 2.5-2.5v-5c0-.829.672-1.5 1.5-1.5s1.5.671 1.5 1.5zm3.512-12.651c-.875-1.07-2.456-1.129-3.409-.176l-5.808 5.808c-.813.813-1.269 1.915-1.269 3.064v.955c0 .276.224.5.5.5h.955c1.149 0 2.252-.457 3.064-1.269l5.715-5.715c.85-.85 1.013-2.236.252-3.167zm-15.008 13.61-1.263 1.229-.222-.205c-.608-.563-1.558-.527-2.12.081-.563.607-.527 1.557.081 2.12l.737.681c.409.41.954.636 1.533.636s1.124-.226 1.509-.612l1.821-1.763c.598-.572.619-1.522.046-2.12-.574-.599-1.522-.619-2.121-.046zm2.121-5.954c-.574-.599-1.522-.619-2.121-.046l-1.263 1.229-.222-.205c-.608-.563-1.558-.527-2.12.081-.563.607-.527 1.557.081 2.12l.737.681c.409.41.954.636 1.533.636s1.124-.226 1.509-.612l1.821-1.763c.598-.572.619-1.522.046-2.12zm2.875 10.496c.828 0 1.5-.671 1.5-1.5s-.672-1.5-1.5-1.5h-.083c-.829 0-1.458.671-1.458 1.5s.713 1.5 1.542 1.5z" fill="${accentColor}"/></svg>`;
+        const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+        if (link) {
+          link.href = `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
+        }
+      }
+    }, 50);
   }, [theme]);
 
   // --- Keyboard Shortcuts Listeners ---
@@ -168,6 +183,10 @@ export default function App() {
         e.preventDefault();
         playClickSound();
         setView('calendar');
+      } else if (key === '5') {
+        e.preventDefault();
+        playClickSound();
+        setView('themes');
       } else if (key.toLowerCase() === 'n') {
         e.preventDefault();
         playClickSound();
@@ -199,7 +218,7 @@ export default function App() {
   }, [theme]);
 
   const cycleTheme = () => {
-    const themeSequence: AppTheme[] = ['dark', 'light', 'cyberpunk', 'emerald', 'sunset', 'ocean'];
+    const themeSequence: AppTheme[] = ['dark', 'light', 'cyberpunk', 'emerald', 'sunset', 'ocean', 'tokyo', 'nordic', 'minimal', 'github', 'solarized', 'nebula'];
     const nextIdx = (themeSequence.indexOf(theme) + 1) % themeSequence.length;
     setTheme(themeSequence[nextIdx]);
   };
@@ -408,6 +427,10 @@ export default function App() {
             playClickSound();
             setIsAiTaskModalOpen(true);
           }}
+          onClockClick={() => {
+            playClickSound();
+            setIsFullScreenClockOpen(true);
+          }}
         />
 
         {/* View Layout Renderer */}
@@ -456,6 +479,10 @@ export default function App() {
               clearActiveTaskId={() => setTimerActiveTaskId(null)}
               onUpdateTaskStatus={handleUpdateTaskStatus}
             />
+          )}
+
+          {currentView === 'themes' && (
+            <ThemeSelectView theme={theme} setTheme={setTheme} />
           )}
         </main>
       </div>
@@ -524,6 +551,10 @@ export default function App() {
             </div>
           </div>
         </div>
+      )}
+      
+      {isFullScreenClockOpen && (
+        <FullScreenClock onClose={() => setIsFullScreenClockOpen(false)} />
       )}
     </div>
   );

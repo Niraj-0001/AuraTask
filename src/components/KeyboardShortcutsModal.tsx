@@ -12,6 +12,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ 
     { key: '2', description: 'Switch to Kanban Board View' },
     { key: '3', description: 'Switch to List View' },
     { key: '4', description: 'Switch to Calendar View' },
+    { key: '5', description: 'Open Theme Studio Page' },
     { key: 'N', description: 'Create a new task' },
     { key: 'F', description: 'Open Pomodoro Focus Timer' },
     { key: 'T', description: 'Cycle aesthetic color themes' },

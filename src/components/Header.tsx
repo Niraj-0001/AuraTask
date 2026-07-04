@@ -7,6 +7,7 @@ interface HeaderProps {
   onAddTaskClick: () => void;
   onOpenKeyboardShortcuts: () => void;
   onOpenAiModal: () => void;
+  onClockClick: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -14,6 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
   onAddTaskClick,
   onOpenKeyboardShortcuts,
   onOpenAiModal,
+  onClockClick,
 }) => {
   const [time, setTime] = useState(new Date());
   const [aiPromptText, setAiPromptText] = useState('');
@@ -129,7 +131,19 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Date/Time widget & Actions */}
       <div className="header-actions">
         {/* Local time clock */}
-        <div className="date-time-widget">
+        <div 
+          className="date-time-widget"
+          onClick={onClockClick}
+          role="button"
+          tabIndex={0}
+          title="Open Fullscreen Clock"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClockClick();
+            }
+          }}
+        >
           <span className="time-display glow-text">{formatTime(time)}</span>
           <span className="date-display">{formatDate(time)}</span>
         </div>
