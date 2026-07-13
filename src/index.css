@@ -396,8 +396,104 @@
   --cat-shopping: #f43f5e;
   --cat-health: #38bdf8;
   --cat-ideas: #fbbf24;
-  --cat-other: #581c87;
 }
+
+/* Latte Theme (Light) */
+:root[data-theme='latte'] {
+  --bg-primary: #fdfbf7;
+  --bg-secondary: #f4efe6;
+  --bg-tertiary: #eadfce;
+  --text-primary: #4a3f35;
+  --text-secondary: #7a6a58;
+  --text-muted: #b0a395;
+
+  --accent: #b07d62;
+  --accent-hover: #8a5a44;
+  --accent-rgb: 176, 125, 98;
+
+  --border-color: #d6cebf;
+  --glass-bg: rgba(244, 239, 230, 0.7);
+  --glass-border: rgba(234, 223, 206, 0.6);
+  --shadow-color: rgba(74, 63, 53, 0.05);
+  --glow-color: rgba(176, 125, 98, 0.15);
+
+  --priority-low: #6b8e23;
+  --priority-medium: #d4a373;
+  --priority-high: #e07a5f;
+  --priority-critical: #9a031e;
+
+  --cat-study: #b07d62;
+  --cat-personal: #cb997e;
+  --cat-shopping: #a5a58d;
+  --cat-health: #6b705c;
+  --cat-ideas: #ffe8d6;
+  --cat-other: #b7b7a4;
+}
+
+/* Mint Theme (Light) */
+:root[data-theme='mint'] {
+  --bg-primary: #f2fbf7;
+  --bg-secondary: #e6f6ec;
+  --bg-tertiary: #d1efde;
+  --text-primary: #1b4332;
+  --text-secondary: #2d6a4f;
+  --text-muted: #74a58b;
+
+  --accent: #081c15;
+  --accent-hover: #1b4332;
+  --accent-rgb: 8, 28, 21;
+
+  --border-color: #b7e4c7;
+  --glass-bg: rgba(230, 246, 236, 0.7);
+  --glass-border: rgba(209, 239, 222, 0.6);
+  --shadow-color: rgba(27, 67, 50, 0.05);
+  --glow-color: rgba(8, 28, 21, 0.1);
+
+  --priority-low: #40916c;
+  --priority-medium: #f2cc8f;
+  --priority-high: #e07a5f;
+  --priority-critical: #d90429;
+
+  --cat-study: #2d6a4f;
+  --cat-personal: #52b788;
+  --cat-shopping: #74c69d;
+  --cat-health: #95d5b2;
+  --cat-ideas: #b7e4c7;
+  --cat-other: #d8f3dc;
+}
+
+/* Cotton Theme (Light) */
+:root[data-theme='cotton'] {
+  --bg-primary: #fcfdfe;
+  --bg-secondary: #f0f7fa;
+  --bg-tertiary: #e1eff6;
+  --text-primary: #2b3a4a;
+  --text-secondary: #5c748c;
+  --text-muted: #9badc2;
+
+  --accent: #ffb5a7;
+  --accent-hover: #ff9f8c;
+  --accent-rgb: 255, 181, 167;
+
+  --border-color: #cce3f0;
+  --glass-bg: rgba(240, 247, 250, 0.75);
+  --glass-border: rgba(225, 239, 246, 0.6);
+  --shadow-color: rgba(43, 58, 74, 0.05);
+  --glow-color: rgba(255, 181, 167, 0.15);
+
+  --priority-low: #84a59d;
+  --priority-medium: #f6bd60;
+  --priority-high: #f28482;
+  --priority-critical: #e56b6f;
+
+  --cat-study: #ffb5a7;
+  --cat-personal: #fcd5ce;
+  --cat-shopping: #f8edeb;
+  --cat-health: #f9dcc4;
+  --cat-ideas: #fec89a;
+  --cat-other: #e8e8e4;
+}
+
 
 /* Resets */
 * {
@@ -2973,6 +3069,51 @@ select {
   background: linear-gradient(-45deg, #060b1b, #39227c, #1b2a5a, #171a38, #020510);
   background-size: 400% 400%;
   animation: fullscreenGradientFlow 15s ease infinite;
+}
+
+/* Light theme overrides for fullscreen gradient */
+:root[data-theme='light'] .focus-fullscreen-overlay.gradient-study,
+:root[data-theme='github'] .focus-fullscreen-overlay.gradient-study,
+:root[data-theme='minimal'] .focus-fullscreen-overlay.gradient-study,
+:root[data-theme='solarized'] .focus-fullscreen-overlay.gradient-study,
+:root[data-theme='latte'] .focus-fullscreen-overlay.gradient-study,
+:root[data-theme='mint'] .focus-fullscreen-overlay.gradient-study,
+:root[data-theme='cotton'] .focus-fullscreen-overlay.gradient-study {
+  background: linear-gradient(-45deg, #f8fafc, #e0e7ff, #c7d2fe, #e0e7ff, #f8fafc);
+  background-size: 400% 400%;
+}
+
+:root[data-theme='light'] .focus-fullscreen-overlay.gradient-short_break,
+:root[data-theme='github'] .focus-fullscreen-overlay.gradient-short_break,
+:root[data-theme='minimal'] .focus-fullscreen-overlay.gradient-short_break,
+:root[data-theme='solarized'] .focus-fullscreen-overlay.gradient-short_break,
+:root[data-theme='latte'] .focus-fullscreen-overlay.gradient-short_break,
+:root[data-theme='mint'] .focus-fullscreen-overlay.gradient-short_break,
+:root[data-theme='cotton'] .focus-fullscreen-overlay.gradient-short_break {
+  background: linear-gradient(-45deg, #f0fdfa, #ccfbf1, #99f6e4, #ccfbf1, #f0fdfa);
+  background-size: 400% 400%;
+}
+
+:root[data-theme='light'] .focus-fullscreen-overlay.gradient-long_break,
+:root[data-theme='github'] .focus-fullscreen-overlay.gradient-long_break,
+:root[data-theme='minimal'] .focus-fullscreen-overlay.gradient-long_break,
+:root[data-theme='solarized'] .focus-fullscreen-overlay.gradient-long_break,
+:root[data-theme='latte'] .focus-fullscreen-overlay.gradient-long_break,
+:root[data-theme='mint'] .focus-fullscreen-overlay.gradient-long_break,
+:root[data-theme='cotton'] .focus-fullscreen-overlay.gradient-long_break {
+  background: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #bae6fd, #e0f2fe, #f0f9ff);
+  background-size: 400% 400%;
+}
+
+:root[data-theme='light'] .focus-fullscreen-overlay.gradient-stopwatch,
+:root[data-theme='github'] .focus-fullscreen-overlay.gradient-stopwatch,
+:root[data-theme='minimal'] .focus-fullscreen-overlay.gradient-stopwatch,
+:root[data-theme='solarized'] .focus-fullscreen-overlay.gradient-stopwatch,
+:root[data-theme='latte'] .focus-fullscreen-overlay.gradient-stopwatch,
+:root[data-theme='mint'] .focus-fullscreen-overlay.gradient-stopwatch,
+:root[data-theme='cotton'] .focus-fullscreen-overlay.gradient-stopwatch {
+  background: linear-gradient(-45deg, #f8fafc, #f1f5f9, #e2e8f0, #f1f5f9, #f8fafc);
+  background-size: 400% 400%;
 }
 
 @keyframes fullscreenGradientFlow {

@@ -168,6 +168,9 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
   const [editStopwatchMins, setEditStopwatchMins] = useState(0);
   const [editStopwatchSecs, setEditStopwatchSecs] = useState(0);
 
+  const [showProductivityTip, setShowProductivityTip] = useState(true);
+
+
   const stopwatchIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const prevTimerModeRef = useRef<TimerMode>(timerMode);
@@ -497,7 +500,7 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
   }, [sizeMode]);
 
   // Size specific styling calculations
-  const cardMaxWidth = sizeMode === 'large' ? '840px' : '440px';
+  const cardMaxWidth = sizeMode === 'large' ? '1000px' : '440px';
   const wheelSize = sizeMode === 'large' ? '300px' : '210px';
   const timerFontSize = sizeMode === 'large' ? '64px' : '36px';
   const stopwatchFontSize = sizeMode === 'large' ? '80px' : '48px';
@@ -1086,12 +1089,21 @@ export const FocusHubView: React.FC<FocusHubViewProps> = ({
           )}
 
           {/* Productivity Tip */}
-          <div className="glass" style={{ padding: '20px', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-            <span className="timer-select-title" style={{ color: 'var(--text-primary)', marginBottom: '8px', display: 'block' }}>Productivity Tip</span>
-            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-              The **Study** Focus timer helps you build attention using interval countdowns. If you prefer free-flow tracking, use the **Stopwatch** tab. Assorted time stats accumulate directly to your dashboard stats.
-            </p>
-          </div>
+          {showProductivityTip && (
+            <div className="glass" style={{ padding: '20px', borderRadius: '20px', border: '1px solid var(--border-color)', position: 'relative' }}>
+              <button 
+                onClick={() => setShowProductivityTip(false)}
+                style={{ position: 'absolute', top: '16px', right: '16px', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+                title="Close Tip"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <span className="timer-select-title" style={{ color: 'var(--text-primary)', marginBottom: '8px', display: 'block' }}>Productivity Tip</span>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+                The **Study** Focus timer helps you build attention using interval countdowns. If you prefer free-flow tracking, use the **Stopwatch** tab. Assorted time stats accumulate directly to your dashboard stats.
+              </p>
+            </div>
+          )}
         </div>
 
       </div>

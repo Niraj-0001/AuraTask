@@ -93,6 +93,24 @@ const THEME_OPTIONS: ThemeConfig[] = [
     name: 'Cosmic Nebula',
     description: 'Energetic galactic fantasy theme with glowing violet-magenta gas clouds.',
     colors: { bg: '#0d0714', secondary: '#180e29', accent: '#d946ef', text: '#fdf4ff', priority: '#a21caf' }
+  },
+  {
+    id: 'latte',
+    name: 'Morning Latte',
+    description: 'A warm, light coffee theme with soft brown text and elegant creamy backgrounds.',
+    colors: { bg: '#fdfbf7', secondary: '#f4efe6', accent: '#b07d62', text: '#4a3f35', priority: '#d4a373' }
+  },
+  {
+    id: 'mint',
+    name: 'Fresh Mint',
+    description: 'Crisp and refreshing light green tones with dark forest accents for a natural feel.',
+    colors: { bg: '#f2fbf7', secondary: '#e6f6ec', accent: '#081c15', text: '#1b4332', priority: '#40916c' }
+  },
+  {
+    id: 'cotton',
+    name: 'Cotton Candy',
+    description: 'Soft pastel pinks and airy blues create a dreamy, light workspace atmosphere.',
+    colors: { bg: '#fcfdfe', secondary: '#f0f7fa', accent: '#ffb5a7', text: '#2b3a4a', priority: '#f28482' }
   }
 ];
 
