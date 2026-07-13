@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  LayoutDashboard, 
-  KanbanSquare, 
-  ListTodo, 
-  Calendar, 
-  Flame, 
-  Folder, 
-  Moon, 
-  Sun, 
-  Menu, 
-  X, 
+import {
+  LayoutDashboard,
+  KanbanSquare,
+  ListTodo,
+  Calendar,
+  Flame,
+  Folder,
+  Moon,
+  Sun,
+  Menu,
+  X,
   Clock,
   Sparkles,
   CheckCircle2,
@@ -41,12 +41,12 @@ interface SidebarProps {
 }
 
 const LogoIcon = () => (
-  <svg 
-    viewBox="0 0 24 24" 
+  <svg
+    viewBox="0 0 24 24"
     fill="currentColor"
     style={{ width: '16px', height: '16px' }}
   >
-    <path d="m20 13.5v5c0 3.032-2.468 5.5-5.5 5.5h-9c-3.032 0-5.5-2.468-5.5-5.5v-13c0-3.033 2.468-5.5 5.5-5.5h8c.828 0 1.5.671 1.5 1.5s-.672 1.5-1.5 1.5h-8c-1.379 0-2.5 1.122-2.5 2.5v13c0 1.379 1.121 2.5 2.5 2.5h9c1.379 0 2.5-1.121 2.5-2.5v-5c0-.829.672-1.5 1.5-1.5s1.5.671 1.5 1.5zm3.512-12.651c-.875-1.07-2.456-1.129-3.409-.176l-5.808 5.808c-.813.813-1.269 1.915-1.269 3.064v.955c0 .276.224.5.5.5h.955c1.149 0 2.252-.457 3.064-1.269l5.715-5.715c.85-.85 1.013-2.236.252-3.167zm-15.008 13.61-1.263 1.229-.222-.205c-.608-.563-1.558-.527-2.12.081-.563.607-.527 1.557.081 2.12l.737.681c.409.41.954.636 1.533.636s1.124-.226 1.509-.612l1.821-1.763c.598-.572.619-1.522.046-2.12-.574-.599-1.522-.619-2.121-.046zm2.121-5.954c-.574-.599-1.522-.619-2.121-.046l-1.263 1.229-.222-.205c-.608-.563-1.558-.527-2.12.081-.563.607-.527 1.557.081 2.12l.737.681c.409.41.954.636 1.533.636s1.124-.226 1.509-.612l1.821-1.763c.598-.572.619-1.522.046-2.12zm2.875 10.496c.828 0 1.5-.671 1.5-1.5s-.672-1.5-1.5-1.5h-.083c-.829 0-1.458.671-1.458 1.5s.713 1.5 1.542 1.5z"/>
+    <path d="m20 13.5v5c0 3.032-2.468 5.5-5.5 5.5h-9c-3.032 0-5.5-2.468-5.5-5.5v-13c0-3.033 2.468-5.5 5.5-5.5h8c.828 0 1.5.671 1.5 1.5s-.672 1.5-1.5 1.5h-8c-1.379 0-2.5 1.122-2.5 2.5v13c0 1.379 1.121 2.5 2.5 2.5h9c1.379 0 2.5-1.121 2.5-2.5v-5c0-.829.672-1.5 1.5-1.5s1.5.671 1.5 1.5zm3.512-12.651c-.875-1.07-2.456-1.129-3.409-.176l-5.808 5.808c-.813.813-1.269 1.915-1.269 3.064v.955c0 .276.224.5.5.5h.955c1.149 0 2.252-.457 3.064-1.269l5.715-5.715c.85-.85 1.013-2.236.252-3.167zm-15.008 13.61-1.263 1.229-.222-.205c-.608-.563-1.558-.527-2.12.081-.563.607-.527 1.557.081 2.12l.737.681c.409.41.954.636 1.533.636s1.124-.226 1.509-.612l1.821-1.763c.598-.572.619-1.522.046-2.12-.574-.599-1.522-.619-2.121-.046zm2.121-5.954c-.574-.599-1.522-.619-2.121-.046l-1.263 1.229-.222-.205c-.608-.563-1.558-.527-2.12.081-.563.607-.527 1.557.081 2.12l.737.681c.409.41.954.636 1.533.636s1.124-.226 1.509-.612l1.821-1.763c.598-.572.619-1.522.046-2.12zm2.875 10.496c.828 0 1.5-.671 1.5-1.5s-.672-1.5-1.5-1.5h-.083c-.829 0-1.458.671-1.458 1.5s.713 1.5 1.542 1.5z" />
   </svg>
 );
 
@@ -136,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <span className="brand-name">AURA.TASK</span>
         </div>
-        <button 
+        <button
           onClick={() => { playClickSound(); setIsOpen(!isOpen); }}
           className="icon-btn"
         >
@@ -146,7 +146,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Panel */}
       <aside className={`app-sidebar glass ${isOpen ? 'open' : ''}`}>
-        
+
         {/* Brand Logo */}
         <div className="sidebar-brand">
           <div className="brand-icon">
@@ -172,22 +172,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Scrollable Filters Section */}
         <div className="sidebar-scroll">
-          
+
           {/* Projects/Categories Dropdown Toggle */}
-          <div 
+          <div
             className="sidebar-title"
             onClick={() => { playClickSound(); setIsCategoriesOpen(!isCategoriesOpen); }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
             title="Show/Hide Projects"
           >
             <span>Projects</span>
-            <ChevronDown 
-              size={14} 
-              style={{ 
-                transform: isCategoriesOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
+            <ChevronDown
+              size={14}
+              style={{
+                transform: isCategoriesOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                 transition: 'transform 0.22s ease-in-out',
                 color: 'var(--text-secondary)'
-              }} 
+              }}
             />
           </div>
           {isCategoriesOpen && (
@@ -199,13 +199,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className={`filter-item ${activeCategory === cat.id ? 'active' : ''}`}
                 >
                   <div className="filter-label" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span 
-                      className="filter-icon" 
-                      style={{ 
-                        display: 'flex', 
+                    <span
+                      className="filter-icon"
+                      style={{
+                        display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: activeCategory === cat.id ? 'var(--accent)' : cat.color 
+                        color: activeCategory === cat.id ? 'var(--accent)' : cat.color
                       }}
                     >
                       {cat.icon}
@@ -218,20 +218,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
 
           {/* Priorities Dropdown Toggle */}
-          <div 
+          <div
             className="sidebar-title"
             onClick={() => { playClickSound(); setIsPrioritiesOpen(!isPrioritiesOpen); }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
             title="Show/Hide Priorities"
           >
             <span>Priorities</span>
-            <ChevronDown 
-              size={14} 
-              style={{ 
-                transform: isPrioritiesOpen ? 'rotate(180deg)' : 'rotate(0deg)', 
+            <ChevronDown
+              size={14}
+              style={{
+                transform: isPrioritiesOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                 transition: 'transform 0.22s ease-in-out',
                 color: 'var(--text-secondary)'
-              }} 
+              }}
             />
           </div>
           {isPrioritiesOpen && (
@@ -243,12 +243,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className={`filter-item ${activePriority === prio.id ? 'active' : ''}`}
                 >
                   <div className="filter-label">
-                    <span 
-                      className="column-dot" 
-                      style={{ 
-                        width: '8px', 
-                        height: '8px', 
-                        backgroundColor: prio.id === 'all' ? 'var(--text-muted)' : `var(--priority-${prio.id})` 
+                    <span
+                      className="column-dot"
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: prio.id === 'all' ? 'var(--text-muted)' : `var(--priority-${prio.id})`
                       }}
                     />
                     <span>{prio.label}</span>
@@ -267,21 +267,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="label">Completion Rate</span>
               <span className="value">{completionRate}%</span>
             </div>
-            
+
             <div className="progress-container">
-              <div 
+              <div
                 className="progress-bar-fill"
                 style={{ width: `${completionRate}%` }}
               />
             </div>
-            
+
             <div className="stats-details">
               <span className="stats-details-item">
-                <CheckCircle2 className="w-3 h-3" style={{ color: 'var(--accent)' }} /> 
+                <CheckCircle2 className="w-3 h-3" style={{ color: 'var(--accent)' }} />
                 {completedCount}/{totalCount} Done
               </span>
               <span className="stats-details-item">
-                <Clock className="w-3 h-3" /> 
+                <Clock className="w-3 h-3" />
                 {formatFocusTime(totalFocusTime)}
               </span>
             </div>

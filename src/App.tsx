@@ -12,6 +12,9 @@ import { parseAiPrompt, fetchGeminiParsedTask, AiTaskModal } from './components/
 import { FullScreenClock } from './components/FullScreenClock';
 import { ThemeSelectView } from './components/ThemeSelectView';
 import { WelcomeModal } from './components/WelcomeModal';
+import { MobileNav } from './components/MobileNav';
+import { MobileTaskView } from './components/MobileTaskView';
+import { MobileAddTaskView } from './components/MobileAddTaskView';
 import type { Task, TaskStatus, TaskCategory, TaskPriority, AppTheme } from './types';
 import { playTaskCompleteSound, playClickSound } from './utils/audio';
 import { triggerConfetti } from './utils/confetti';
@@ -112,7 +115,15 @@ export default function App() {
   const [username, setUsername] = useState<string>(() => {
     return localStorage.getItem('auratask_username') || '';
   });
-  const [currentView, setView] = useState<'dashboard' | 'board' | 'list' | 'calendar' | 'focus' | 'themes'>('dashboard');
+  const [currentView, setView] = useState<'dashboard' | 'board' | 'list' | 'calendar' | 'focus' | 'themes' | 'mobile-add-task'>('dashboard');
+  
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [activeCategory, setCategory] = useState<TaskCategory | 'all'>('all');
   const [activePriority, setPriority] = useState<TaskPriority | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -515,7 +526,7 @@ export default function App() {
             />
           )}
 
-          {currentView === 'list' && (
+          {currentView === 'list' && !isMobile && (
             <ListView
               tasks={filteredTasks}
               onToggleTaskComplete={handleToggleTaskComplete}
@@ -523,6 +534,37 @@ export default function App() {
               onEditTask={handleOpenEditTaskModal}
               onDeleteTask={handleDeleteTask}
               onStartFocus={handleStartFocusTimer}
+            />
+          )}
+
+          {currentView === 'list' && isMobile && (
+            <MobileTaskView 
+              tasks={filteredTasks}
+              onToggleTaskComplete={handleToggleTaskComplete}
+              onStartFocus={handleStartFocusTimer}
+              onDeleteTask={handleDeleteTask}
+              onAddNewTask={() => {
+                setEditingTask(null);
+                setView('mobile-add-task');
+              }}
+              onEditTask={(task) => {
+                setEditingTask(task);
+                setView('mobile-add-task');
+              }}
+            />
+          )}
+
+          {currentView === 'mobile-add-task' && isMobile && (
+            <MobileAddTaskView
+              task={editingTask}
+              onSave={(taskData) => {
+                handleSaveTask(taskData);
+                setView('list');
+              }}
+              onCancel={() => {
+                setEditingTask(null);
+                setView('list');
+              }}
             />
           )}
 
@@ -631,6 +673,16 @@ export default function App() {
       {isFullScreenClockOpen && (
         <FullScreenClock onClose={() => setIsFullScreenClockOpen(false)} />
       )}
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileNav 
+        currentView={currentView} 
+        setView={setView} 
+        onAddClick={() => {
+          setEditingTask(null);
+          setView('mobile-add-task');
+        }}
+      />
     </div>
   );
 }
