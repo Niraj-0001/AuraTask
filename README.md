@@ -1,32 +1,78 @@
-# React + TypeScript + Vite
+<h1 align="center">
+⚡ AuraTask
+</h1>
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+<p align="center">
+AI-Powered Productivity App
+</p>
 
-Currently, two official plugins are available:
+<p align="center">
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-blue?style=for-the-badge)](https://your-site.com)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript)]()
+[![Vite](https://img.shields.io/badge/Vite-purple?style=for-the-badge&logo=vite)]()
 
-## React Compiler
+</p>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+# ✨ Features
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+| Feature | Status |
+|---------|--------|
+| 🤖 AI Assistant | ✅ |
+| 📅 Calendar | ✅ |
+| 🔔 Push Notifications | ✅ |
+| 📱 PWA | ✅ |
+| 🌙 Dark Mode | ✅ |
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+---
+
+<details>
+<summary>📸 Screenshots</summary>
+
+Add your screenshots here.
+
+</details>
+
+---
+
+<details>
+<summary>⚙ Installation</summary>
+
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+</details>
+
+---
+
+```mermaid
+graph TD
+
+A[Open AuraTask]
+B[Create Task]
+C[AI Suggestion]
+D[Save]
+E[Notification]
+
+A --> B
+B --> C
+C --> D
+D --> E
+```
+
+---
+
+## 📊 Progress
+
+```
+█████████████████████ 100%
+```
+
+---
+
+⭐ Star this repository if you like it!
